@@ -15,5 +15,23 @@
   "bugs": {
     "url": "https://github.com/IronMan-HR/IronMan-HR/issues"
   },
-  "homepage": "https://github.com/IronMan-HR/IronMan-HR#readme"
+  "homepage": "https://github.com/IronMan-HR/IronMan-HR#readme",
+  "dependencies": {
+    "axios": "0.18.0",
+    "body-parser": "1.18.3",
+    "cors": "2.8.4",
+    "express": "4.16.3",
+    "knex": "0.14.6",
+    "mongoose": "5.1.3",
+    "mysql": "2.15.0",
+    "react": "16.4.0",
+    "react-dom": "16.4.0"
+  },
+  "devDependencies": {
+    "babel-core": "6.26.3",
+    "babel-loader": "7.1.4",
+    "babel-preset-es2015": "6.24.1",
+    "babel-preset-react": "6.24.1",
+    "webpack": "4.10.1"
+  }
 }
