@@ -1,0 +1,19 @@
+{
+  "name": "ironman-hr",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/IronMan-HR/IronMan-HR.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/IronMan-HR/IronMan-HR/issues"
+  },
+  "homepage": "https://github.com/IronMan-HR/IronMan-HR#readme"
+}
