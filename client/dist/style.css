@@ -1,15 +1,24 @@
+h1, h2, h3, h4, h5, h6, p {
+  margin: 0;
+  padding: 0;
+}
+
+ul, li {
+  list-style: none;
+}
+
 * {
   box-sizing: border-box;
+  border: 1px solid black;
 }
 
 html, body, #app, .app-container {
   height: 100%;
 }
 
-.game, .scoreboard {
-  border: 1px solid black;
-  display: inline-block;
-  height: 80%;
+.app-container {
+  display: flex;
+  justify-content: flex-start;
 }
 
 .game {
@@ -25,5 +34,5 @@ html, body, #app, .app-container {
 }
 
 .brick {
-  border: 1px solid black;
+  
 }
