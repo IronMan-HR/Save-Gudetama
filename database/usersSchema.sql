@@ -1,6 +1,8 @@
-DROP DATABASE humptydumpty IF EXISTS;
+DROP DATABASE IF EXISTS humptydumpty;
 
 CREATE DATABASE humptydumpty;
+
+USE humptydumpty;
 
 CREATE TABLE users (
   id INTEGER NOT NULL PRIMARY KEY,
