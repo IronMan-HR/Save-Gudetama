@@ -5,7 +5,6 @@ class Scoreboard extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-    	highscore:[{username: "Scott", score: 1000}, {username: "Lina", score: 900}, {username: "Koichi", score: 800} ]
     }
   //this.updateScoreboard = this.updateScoreboard.bind(this)
   }
@@ -29,8 +28,8 @@ class Scoreboard extends React.Component {
   	return (
       <div className="scoreboard">
         <p className="sbHeader">Scoreboard</p>
-        {this.state.highscore.map((score) => 
-        <div>  
+        {this.props.scores.map((score, index) => 
+        <div key={index}>  
           <ul className="sbColumn">{score.username}</ul>
           <ul className="sbColumn">{score.score}</ul>
         </div>
