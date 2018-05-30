@@ -28,11 +28,11 @@ class Scoreboard extends React.Component {
   render() {
   	return (
       <div className="scoreboard">
-        <p>Scoreboard</p>
+        <p className="sbHeader">Scoreboard</p>
         {this.state.highscore.map((score) => 
         <div>  
-          <ul>{score.username}</ul>
-          <ul>{score.score}</ul>
+          <ul className="sbColumn">{score.username}</ul>
+          <ul className="sbColumn">{score.score}</ul>
         </div>
         )} 
       </div>
