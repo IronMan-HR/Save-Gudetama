@@ -34,20 +34,38 @@ const retrieveHighScore = function(user, callback) {
 };
 
 //function to update high score for a certain user
-const addHighScore = function(userWithScore, callback) {
-  let queryStr = `REPLACE INTO users VALUES (${userWithScore.id}, '${userWithScore.username}', ${userWithScore.high_score}) `;
-  connection.query(queryStr, (err, data) => {
-    if(err) console.log('error adding high score into DB', err);
-    callback(data);
-  });
-};
+const updateHighScore = function(userWithScore) {
+  let queryStr = `SELECT * FROM users WHERE username = '${userWithScore.username}'`;
+  connection.query(queryStr, (err, result) => {
+    if(err) console.log('error')
+    else {
+      if (!result.length) {
+       //this is if it's a new player
+       let queryStr2 = `INSERT INTO users (username, high_score) VALUES ('${userWithScore.username}', ${userWithScore.high_score})`;
+       connection.query(queryStr2, (err) => {
+         if(err) console.log('error inserting high score into DB', err);
+       })
+      } else {
+       //this is if the player has previously played the game 
+       let queryStr3 = `UPDATE users SET high_score = ${userWithScore.high_score} WHERE username='${userWithScore.username}' AND high_score < ${userWithScore.high_score}`;
+       connection.query(queryStr3, (err) => {
+         if(err) console.log('error updating high score', err);
+       });
+      }
+    }
+  })  
+}
 
+// Below are tests to make sure database is working:
 // addHighScore({id: 10, username: 'egg', high_score: 99}, (data) => {console.log(data)}), 
 // addHighScore({id: 11, username: 'gudetama', high_score: 99999}, (data) => {console.log(data)})
+// updateHighScore({id: 11, username: 'gudetama', high_score: 1000000});
+// updateHighScore({username: 'gudetamamama', high_score: 780});
+
 
 //export all database functions here 
 module.exports = {
   retrieveUsers,
   retrieveHighScore,
-  addHighScore
+  updateHighScore
 };
