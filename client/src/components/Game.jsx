@@ -1,16 +1,34 @@
 import React from 'react';
 import Brick from './Brick.jsx';
+import dictionary from '../dictionary.js';
 
 class Game extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       userInput: '',
-      words: ["my", "name", "is", "joe"],
+      words: [],
       time: 0,
     }
     this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
+    this.addWord = this.addWord.bind(this);
+  }
+
+  addWord() {
+    var newWord = dictionary[Math.floor(Math.random() * dictionary.length)];
+    this.setState({
+      words: [...this.state.words, newWord]
+    });
+  }
+
+  componentDidMount() {
+    var interval = setInterval(() => {
+      this.addWord();
+      if (this.state.words.length >= 20) {
+        clearInterval(interval);
+      }
+    }, 1000);
   }
 
   handleChange(e) {
@@ -48,6 +66,5 @@ class Game extends React.Component {
   }
 
 }
-
 
 export default Game;
