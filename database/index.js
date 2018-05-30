@@ -17,7 +17,7 @@ connection.connect(function(err) {
 
 //function to retrieve all users
 const retrieveUsers = function(callback) {
-  let queryStr = `SELECT * FROM users`;
+  let queryStr = `SELECT * FROM users ORDER BY high_score DESC`;
   connection.query(queryStr, (err, data) => {
     if(err) console.log('DB: error retrieving users', err);
     callback(data);
