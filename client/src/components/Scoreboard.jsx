@@ -27,7 +27,7 @@ class Scoreboard extends React.Component {
   render() {
   	return (
       <div className="scoreboard">
-        <p className="sbHeader">Scoreboard</p>
+        <h2 className="sbHeader">High Scores</h2>
         {this.props.scores.map((score, index) => 
         <div key={index}>  
           <ul className="sbColumn">{score.username}</ul>

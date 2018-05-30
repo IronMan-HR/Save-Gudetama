@@ -14,7 +14,9 @@ class App extends React.Component {
   render() {
     return (
       <div className="app-container">
-        <nav>Our awesome game</nav>  
+        <nav>
+          <h1>SAVE GUDETAMA!</h1>
+        </nav>  
         <div className="game-container">
           <Game />
           <Scoreboard scores={this.state.scores}/>

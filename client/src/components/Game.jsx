@@ -46,7 +46,7 @@ class Game extends React.Component {
     
     var wordInterval = setInterval(() => {
       this.addWord();
-      if (this.state.words.length >= 18) {
+      if (this.state.words.length >= 16) {
         this.stopGame([timeInterval, wordInterval]);
       }
     }, 1000); 
@@ -76,7 +76,9 @@ class Game extends React.Component {
     return (
       <div className="game">
         <Timer time={this.state.time} startGame={this.startGame}/>
-          <div className="play">
+        <div className="wall"></div>
+        <div className="play">
+          <div className="gudetama"></div>
           {this.state.words.map((word, index) => {
             return <Brick word={word} key={index} />
           })}
