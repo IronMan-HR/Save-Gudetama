@@ -1,3 +1,25 @@
+* {
+  box-sizing: border-box;
+}
+
+html, body, #app, .app-container {
+  height: 100%;
+}
+
 .game, .scoreboard {
+  border: 1px solid black;
+  display: inline-block;
+  height: 80%;
+}
+
+.game {
+  width: 60%;
+}
+
+.scoreboard {
+  width: 30%;
+}
+
+.brick {
   border: 1px solid black;
 }
