@@ -5,16 +5,16 @@ class Scoreboard extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-    }
+      highscore: []
+    } 
   //this.updateScoreboard = this.updateScoreboard.bind(this)
   }
  
-  /*
+  
   componentDidMount() {
     this.updateScoreboard(); 
-  }*/
+  }
 
-  /*
   updateScoreboard () {
   	app.get("/wordgame")
   	.then((results) => 
@@ -22,7 +22,7 @@ class Scoreboard extends React.Component {
   			highscore: results 
   		})
   	)
-  }*/
+  }
 
   render() {
   	return (
