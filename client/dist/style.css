@@ -19,3 +19,7 @@ html, body, #app, .app-container {
 .scoreboard {
   width: 30%;
 }
+
+.brick {
+  border: 1px solid black;
+}
