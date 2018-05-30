@@ -34,7 +34,7 @@ html, body, #app, .app-container {
 }
 
 .scoreboard {
-  width: 30%;
+  width: 50%;
 }
 
 .game form {
@@ -48,5 +48,14 @@ input {
 
 .brick {
   width: 40%;
+  text-align: center; 
+}
+
+.sbColumn {
+  float: left;
+  width: 50%
+}
+
+.sbHeader{
   text-align: center;
 }
