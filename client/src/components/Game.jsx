@@ -67,6 +67,7 @@ class Game extends React.Component {
   }
 
   startGame() {
+    document.getElementById("overlay").style.display = "none";
     var timeInterval = setInterval(() => {
       var currentTime = this.state.time + 1;
       if (currentTime > 14) {
@@ -121,7 +122,15 @@ class Game extends React.Component {
   render() {
     return (
       <div className="game">
-        <Timer time={this.state.time} startGame={this.startGame}/>
+        <div id="overlay">
+          Humpty Dumpty sat on a wall, 
+          <br></br>Humpty Dumpty had a great fall.
+          <br></br>All the king's horses and all the king's men
+          <br></br>Couldn't put Humpty together again.
+          <br></br>HURRY - KEEP TYPING TO PREVENT HIS DEMISE!
+          <div id="overlay-start" onClick={this.startGame} className="blinking">START GAME</div>
+        </div>
+        <Timer time={this.state.time} />
         <div className="wall"></div>
         <div className="play" >
           <div className="gudetama" style={{'backgroundImage': `url(${this.state.gudetama})`}}></div>

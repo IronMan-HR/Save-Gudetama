@@ -8,7 +8,7 @@ class App extends React.Component {
     super(props);
     this.state = {
       username: '',
-    }
+    }    
   }
 
   componentDidMount() {
@@ -28,7 +28,7 @@ class App extends React.Component {
           <h1>SAVE GUDETAMA!</h1>
         </nav>  
         <div className="game-container">
-          <Game username={this.state.username}/>
+          <Game username={this.state.username} />
           <Scoreboard />
         </div>
       </div>
