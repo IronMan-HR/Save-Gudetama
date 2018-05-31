@@ -1,4 +1,6 @@
 const mysql = require('mysql');
+var fs = require('fs');
+var path = require('path');
 // const mysqlConfig = require('./config.js');
 
 const connection = mysql.createConnection({
@@ -15,6 +17,58 @@ connection.connect(function(err) {
     console.log("Connected!");
   }
 });
+
+var get1000Words = (callback) => {
+  var wordsString = '';
+  var readStream = fs.createReadStream(path.join(__dirname, '/dictionary.txt'));
+  readStream.on('data', (chunk) => {
+    wordsString += chunk;
+  });
+
+  readStream.on('end', () => {
+    var words = {
+      roundOne: [],
+      roundTwo: [],
+      roundThree: [],
+    };
+    var word = '';
+    for (var i = 0; i < wordsString.length; i++) {
+      if (wordsString[i] === '\n') {
+        if (word.length < 5) {
+          words.roundOne.push(word);
+        } else if (word.length < 8) {
+          words.roundTwo.push(word);
+        } else {
+          words.roundThree.push(word);
+        }  
+        word = '';
+      } else {
+        word += wordsString[i];
+      }
+    }
+
+    function shuffle(a) {
+      var j, x, i;
+      for (i = a.length - 1; i > 0; i--) {
+          j = Math.floor(Math.random() * (i + 1));
+          x = a[i];
+          a[i] = a[j];
+          a[j] = x;
+      }
+      return a;
+    }
+
+    shuffle(words.roundOne);
+    shuffle(words.roundTwo);
+    shuffle(words.roundThree);
+
+    words.roundOne = words.roundOne.slice(0, 400);
+    words.roundTwo = words.roundTwo.slice(0, 300);
+    words.roundThree = words.roundThree.slice(0, 300);
+
+    callback(words);
+  });
+}
 
 //FUNCTIONS TO INTERACT WITH DATABASE GO HERE:
 
@@ -85,4 +139,5 @@ const addUserOrUpdateScore = function(userWithScore, callback) {
 module.exports = {
   retrieveUsers,
   addUserOrUpdateScore,
+  get1000Words,
 };

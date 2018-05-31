@@ -1,8 +1,7 @@
 var express = require('express');
 var bodyParser = require('body-parser');
 var axios = require('axios');
-var {retrieveUsers, addUserOrUpdateScore} = require('../database/index.js');
-var dictionary = require('../dictionary.js');
+var {retrieveUsers, addUserOrUpdateScore, get1000Words} = require('../database/index.js');
 
 var app = express(); 
 
@@ -16,14 +15,16 @@ app.get('/wordgame', (req, res) => {
   });
 });
 
-app.get('/dictionary', (req, res) => {
-  res.send(dictionary);
-});
-
 // at end of game, get a username and high score, add to or update db
 app.post('/wordgame', (req,res) => {
   addUserOrUpdateScore(req.body, function(results) {
     res.status(201).send(results);
+  });
+});
+
+app.get('/dictionary', (req, res) => {
+  get1000Words(results => {
+    res.send(results);
   });
 });
 
