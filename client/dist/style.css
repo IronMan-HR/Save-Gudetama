@@ -92,9 +92,23 @@ input {
 
 .sbColumn {
   float: left;
-  width: 50%
+  padding: 10px;
+  height: 0px;
+  text-align: center
+}
+
+.left {
+  width: 20%; 
+}
+
+.right {
+  width: 33%; 
+}
+
+.middle {
+  width: 33%;
 }
 
 .sbHeader{
-  text-align: center;
+  margin-left: 70px
 }
