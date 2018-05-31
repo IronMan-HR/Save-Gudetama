@@ -5,15 +5,20 @@ import Scoreboard from './components/Scoreboard.jsx';
 
 class App extends React.Component {
   constructor(props) {
-    super(props)
+    super(props);
+
   }
 
   render() {
     return (
       <div className="app-container">
-        <h1>Our awesome game</h1>
-        <Game />
-        <Scoreboard />
+        <nav>
+          <h1>SAVE GUDETAMA!</h1>
+        </nav>  
+        <div className="game-container">
+          <Game />
+          <Scoreboard />
+        </div>
       </div>
     )
   }
