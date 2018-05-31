@@ -2,6 +2,7 @@ var express = require('express');
 var bodyParser = require('body-parser');
 var axios = require('axios');
 var {retrieveUsers, addUserOrUpdateScore} = require('../database/index.js');
+var dictionary = require('../dictionary.js');
 
 var app = express(); 
 
@@ -13,6 +14,10 @@ app.get('/wordgame', (req, res) => {
   retrieveUsers((data) => {
     res.send(data);
   });
+});
+
+app.get('/dictionary', (req, res) => {
+  res.send(dictionary);
 });
 
 // at end of game, get a username and high score, add to or update db
