@@ -5,7 +5,9 @@ class Scoreboard extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      highscore: []
+      highscore: [], 
+      rank: ['1ST', '2ND', '3RD', '4TH', '5TH','6TH', '7TH', '8TH', '9TH', '10TH'],
+      counter: 0
     } 
     this.updateScoreboard = this.updateScoreboard.bind(this);
   }
@@ -30,10 +32,14 @@ class Scoreboard extends React.Component {
   	return (
       <div className="scoreboard">
         <h2 className="sbHeader">High Scores</h2>
+        <ul className="sbColumn left">RANK</ul>
+        <ul className="sbColumn middle">NAME</ul>
+        <ul className="sbColumn right">SCORE</ul>
         {this.state.highscore.map((score, index) => 
           <div key={index}>  
-            <ul className="sbColumn">{score.username}</ul>
-            <ul className="sbColumn">{score.high_score}</ul>
+            <ul className="sbColumn left">{this.state.rank[this.state.counter++]}</ul>
+            <ul className="sbColumn middle">{score.username}</ul>
+            <ul className="sbColumn right">{score.high_score}</ul>
           </div>
         )} 
       </div>
