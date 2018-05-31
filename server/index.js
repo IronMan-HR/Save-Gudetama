@@ -16,7 +16,7 @@ app.get('/wordgame', (req, res) => {
 });
 
 // at end of game, get a username and high score, add to or update db
-app.post('/wordgame', (req,res) => { 
+app.post('/wordgame', (req,res) => {
   addUserOrUpdateScore(req.body, function(results) {
     res.status(201).send(results);
   });
