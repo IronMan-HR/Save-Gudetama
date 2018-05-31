@@ -1,1 +1,0 @@
-module.exports = ["chuck", "charlie", "charles", "my", "name", "is", "joe"];
