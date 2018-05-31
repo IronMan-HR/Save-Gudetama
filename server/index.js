@@ -1,11 +1,12 @@
 var express = require('express');
-var bodyParser = require('body-parser')
-var axios = require('axios')
-var {retrieveUsers, retrieveHighScore, updateHighScore} = require('../database/index.js')
+var bodyParser = require('body-parser');
+var axios = require('axios');
+var {retrieveUsers, retrieveHighScore, updateHighScore} = require('../database/index.js');
 
 var app = express(); 
 
 app.use(express.static(__dirname + '/../client/dist'));
+app.use(bodyParser.json());
 
 app.get('/wordgame', (req, res) => {
   //need model for querying data from the database 
