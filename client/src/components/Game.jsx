@@ -2,6 +2,7 @@ import React from 'react';
 import Brick from './Brick.jsx';
 import dictionary from '../dictionary.js';
 import Timer from './Timer.jsx';
+import axios from 'axios';
 
 class Game extends React.Component {
   constructor(props) {
@@ -17,6 +18,7 @@ class Game extends React.Component {
     this.addWord = this.addWord.bind(this);
     this.startGame = this.startGame.bind(this);
     this.stopGame = this.stopGame.bind(this);
+    this.sendScore = this.sendScore.bind(this);
   }
 
   addWord() {
@@ -26,10 +28,23 @@ class Game extends React.Component {
     });
   }
 
+  sendScore(username, score) {
+    axios.post('/wordgame', {
+      "username": username,
+      "high_score": score
+    })
+    .then(result => {
+      console.log(result);
+    }).catch(err => {
+      console.error(err);
+    })
+  }
+
   stopGame(intervals) {
     intervals.forEach(interval => {
       clearInterval(interval);
     });
+    this.sendScore(this.props.username, this.state.time);
     this.setState({
       gudetama: "https://i2-prod.irishmirror.ie/incoming/article11358170.ece/ALTERNATES/s615/I171017_153342_1646320oTextTRMRMMGLPICT000055183128o.jpg",
       // words: [],
@@ -43,7 +58,7 @@ class Game extends React.Component {
       currentTime++;
       this.setState({
         time: currentTime,
-      })
+      });
     }, 1000);
     
     var wordInterval = setInterval(() => {
