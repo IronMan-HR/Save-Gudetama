@@ -5,20 +5,7 @@ import Scoreboard from './components/Scoreboard.jsx';
 
 class App extends React.Component {
   constructor(props) {
-    super(props);
-    this.state = {
-      username: '',
-    }    
-  }
-
-  componentDidMount() {
-    var username = prompt("What is your username?");
-    if (username === null || username === "") {
-      username = "default";
-    }
-    this.setState({
-      username: username,
-    });
+    super(props);   
   }
 
   render() {
@@ -28,7 +15,7 @@ class App extends React.Component {
           <h1>SAVE GUDETAMA!</h1>
         </nav>  
         <div className="game-container">
-          <Game username={this.state.username} />
+          <Game  />
           <Scoreboard />
         </div>
       </div>
