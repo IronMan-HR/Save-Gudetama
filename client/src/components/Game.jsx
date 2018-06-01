@@ -78,21 +78,24 @@ class Game extends React.Component {
       }, this.state.timeInterval);
 
       this.addWord();
+
       if (this.state.words.length >= 20) {
         clearTimeout(step);
         this.stopGame();
+      } else if (this.state.words.length > 16) {
+        document.getElementById('gudetama').style.backgroundColor = "rgba(255, 0, 0, 1)";
+      } else if (this.state.words.length > 10) {
+        document.getElementById('gudetama').style.backgroundColor = "rgba(255, 0, 0, 0.5)";
       }
 
       var newTime = this.state.time + 1;
       if (newTime > 20) {
-        document.getElementById('gudetama').style.backgroundColor = "rgba(255, 0, 0, 1)";
         this.setState({
           time: newTime,
           timeInterval: 600,
           // round: 'roundThree',
         });
-      } else if (newTime > 8) {
-        document.getElementById('gudetama').style.backgroundColor = "rgba(255, 0, 0, 0.5)";
+      } else if (newTime > 8) { 
         this.setState({
           time: newTime,
           timeInterval: 800,
