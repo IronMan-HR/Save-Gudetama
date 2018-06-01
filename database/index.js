@@ -27,6 +27,7 @@ var get1000Words = (callback) => {
 
   readStream.on('end', () => {
     var words = {
+      all: [],
       roundOne: [],
       roundTwo: [],
       roundThree: [],
@@ -34,6 +35,7 @@ var get1000Words = (callback) => {
     var word = '';
     for (var i = 0; i < wordsString.length; i++) {
       if (wordsString[i] === '\n') {
+        words.all.push(word);
         if (word.length < 5) {
           words.roundOne.push(word);
         } else if (word.length < 8) {
@@ -58,10 +60,12 @@ var get1000Words = (callback) => {
       return a;
     }
 
+    shuffle(words.all);
     shuffle(words.roundOne);
     shuffle(words.roundTwo);
     shuffle(words.roundThree);
 
+    words.all.slice(0, 1000);
     words.roundOne = words.roundOne.slice(0, 400);
     words.roundTwo = words.roundTwo.slice(0, 300);
     words.roundThree = words.roundThree.slice(0, 300);

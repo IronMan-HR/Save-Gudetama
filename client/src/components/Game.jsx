@@ -12,7 +12,7 @@ class Game extends React.Component {
       words: [],
       time: 0,
       timeInterval: 1000,
-      round: 'roundOne',
+      round: 'all',
     }
     this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
@@ -54,13 +54,12 @@ class Game extends React.Component {
     })
   }
 
-  stopGame(intervals) {
+  stopGame() {
     document.getElementById('gudetama').style.display = "none";
     document.getElementById("typing-input").disabled = true;
-    intervals.forEach(interval => {
-      clearInterval(interval);
-    });
+    
     this.sendScore(this.state.username, this.state.time);
+    // add overlay
     this.setState({
       //gudetama: "https://i2-prod.irishmirror.ie/incoming/article11358170.ece/ALTERNATES/s615/I171017_153342_1646320oTextTRMRMMGLPICT000055183128o.jpg",
       // words: [],
@@ -72,32 +71,41 @@ class Game extends React.Component {
     e.preventDefault();
     document.getElementById("typing-input").focus();
     document.getElementById("overlay").style.display = "none";
-    var timeInterval = setInterval(() => {
-      var currentTime = this.state.time + 1;
-      if (currentTime > 14) {
+
+    var go = () => {
+      var step = setTimeout(() => {
+        go();
+      }, this.state.timeInterval);
+
+      this.addWord();
+      if (this.state.words.length >= 20) {
+        clearTimeout(step);
+        this.stopGame();
+      }
+
+      var newTime = this.state.time + 1;
+      if (newTime > 20) {
+        document.getElementById('gudetama').style.backgroundColor = "rgba(255, 0, 0, 1)";
         this.setState({
-          time: currentTime,
-          round: 'roundThree',
+          time: newTime,
+          timeInterval: 600,
+          // round: 'roundThree',
         });
-      } else if (currentTime > 7) {
+      } else if (newTime > 8) {
+        document.getElementById('gudetama').style.backgroundColor = "rgba(255, 0, 0, 0.5)";
         this.setState({
-          time: currentTime,
-          timeInterval: 500,
-          round: 'roundTwo',
+          time: newTime,
+          timeInterval: 800,
+          // round: 'roundTwo',
         });
       } else {
         this.setState({
-          time: currentTime,
+          time: newTime,
+          // round: 'roundOne',
         });
       }
-    }, 1000);
-    
-    var wordInterval = setInterval(() => {
-      this.addWord();
-      if (this.state.words.length >= 20) {
-        this.stopGame([timeInterval, wordInterval]);
-      }
-    }, 1000); 
+    }
+    go();
   }
 
   handleChange(e) {
@@ -117,11 +125,20 @@ class Game extends React.Component {
     var index = this.state.words.indexOf(this.state.userInput);
     
     if (index !== -1) {
+      document.getElementById("typing-input").style.backgroundColor = "green";
+      setTimeout(() => {
+        document.getElementById("typing-input").style.backgroundColor = "white";
+      }, 100);
       var newWords = this.state.words.slice();
       newWords.splice(index, 1);
       this.setState({
         words: newWords,
       });
+    } else {
+      document.getElementById("typing-input").style.backgroundColor = "red";
+      setTimeout(() => {
+        document.getElementById("typing-input").style.backgroundColor = "white";
+      }, 100);
     }
 
     this.setState({
@@ -158,7 +175,7 @@ class Game extends React.Component {
             return <Brick word={word} key={index} />
           })}
           <div id="gudetama" ></div>
-          <form onSubmit={this.handleSubmit} >
+          <form onSubmit={this.handleSubmit} autoComplete="off" >
             <input id="typing-input" value={this.state.userInput} onChange={this.handleChange} />
           </form>
         </div>
