@@ -32,21 +32,21 @@ var get1000Words = (callback) => {
       roundTwo: [],
       roundThree: [],
     };
-    var word = '';
-    for (var i = 0; i < wordsString.length; i++) {
-      if (wordsString[i] === '\n') {
-        words.all.push(word);
-        if (word.length < 5) {
-          words.roundOne.push(word);
-        } else if (word.length < 8) {
-          words.roundTwo.push(word);
-        } else {
-          words.roundThree.push(word);
-        }  
-        word = '';
+
+    if (wordsString.slice(0, 20).includes('\r\n')) {
+      words.all = wordsString.split('\r\n');
+    } else {
+      words.all = wordsString.split('\n');
+    }
+    
+    for (var i = 0; i < words.all.length; i++) { 
+      if (words.all[i].length < 5) {
+        words.roundOne.push(words.all[i]);
+      } else if (words.all[i].length < 8) {
+        words.roundTwo.push(words.all[i]);
       } else {
-        word += wordsString[i];
-      }
+        words.roundThree.push(words.all[i]);
+      } 
     }
 
     function shuffle(a) {
