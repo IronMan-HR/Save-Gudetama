@@ -13,6 +13,8 @@ class Game extends React.Component {
       time: 0,
       timeInterval: 1000,
       round: 'all',
+      instructions: `Humpty Dumpty sat on a wall,\nHumpty Dumpty had a great fall.\nAll the king's horses and all the king's men\nCouldn't put Humpty together again.\nHURRY - KEEP TYPING TO PREVENT HIS DEMISE!`,
+      prompt: 'START GAME',
     }
     this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
@@ -56,59 +58,81 @@ class Game extends React.Component {
 
   stopGame() {
     document.getElementById('gudetama').style.display = "none";
-    document.getElementById("typing-input").disabled = true;
+    document.getElementById('typing-input').disabled = true;
+    document.getElementById('overlay').style.display = "block";
+
+    // enables user to hit "enter" after 2 seconds to restart game
+    setTimeout(() => {
+      if (document.getElementById('overlay').display !== "none") {
+        document.getElementById("user-input").focus();
+      }
+    }, 2000);
     
     this.sendScore(this.state.username, this.state.time);
-    // add overlay
+    
     this.setState({
-      //gudetama: "https://i2-prod.irishmirror.ie/incoming/article11358170.ece/ALTERNATES/s615/I171017_153342_1646320oTextTRMRMMGLPICT000055183128o.jpg",
-      // words: [],
-      // time: 0,
-    })
+      instructions: 'GAME OVER',
+      prompt: 'REPLAY',
+    });
   }
 
   startGame(e) {
     e.preventDefault();
-    document.getElementById("typing-input").focus();
-    document.getElementById("overlay").style.display = "none";
+    document.getElementById('typing-input').disabled = false;
+    document.getElementById('typing-input').focus();
+    document.getElementById('overlay').style.display = "none";
+    document.getElementById('gudetama').style.display = "block";
+    document.getElementById('gudetama').style.backgroundColor = "rgba(255, 0, 0, 0)";
 
+    // long function to define what happens at every interval
     var go = () => {
+      // creates a loop by calling itself:
       var step = setTimeout(() => {
         go();
       }, this.state.timeInterval);
 
       this.addWord();
 
+      // ends game or changes background color of gudetama based on length of "words" array
       if (this.state.words.length >= 20) {
         clearTimeout(step);
         this.stopGame();
-      } else if (this.state.words.length > 16) {
+      } else if (this.state.words.length > 15) {
         document.getElementById('gudetama').style.backgroundColor = "rgba(255, 0, 0, 1)";
       } else if (this.state.words.length > 10) {
         document.getElementById('gudetama').style.backgroundColor = "rgba(255, 0, 0, 0.5)";
       }
 
+      // updates the time and speeds up the game accordingly 
       var newTime = this.state.time + 1;
       if (newTime > 20) {
         this.setState({
           time: newTime,
           timeInterval: 600,
-          // round: 'roundThree',
+          //round: 'roundThree', // uncomment these to only serve short words at beginning, long words at end
         });
       } else if (newTime > 8) { 
         this.setState({
           time: newTime,
           timeInterval: 800,
-          // round: 'roundTwo',
+          //round: 'roundTwo',
         });
       } else {
         this.setState({
           time: newTime,
-          // round: 'roundOne',
+          //round: 'roundOne',
         });
       }
     }
-    go();
+
+    // blank slate, then start!
+    this.setState({
+      words: [],
+      time: 0,
+      timeInterval: 1000,
+      userInput: '',
+    }, () => go());
+  
   }
 
   handleChange(e) {
@@ -127,6 +151,7 @@ class Game extends React.Component {
     e.preventDefault();
     var index = this.state.words.indexOf(this.state.userInput);
     
+    // check if what they typed is in our "words" array
     if (index !== -1) {
       document.getElementById("typing-input").style.backgroundColor = "green";
       setTimeout(() => {
@@ -153,20 +178,16 @@ class Game extends React.Component {
     return (
       <div className="game">
         <div id="overlay">
-          <p>Humpty Dumpty sat on a wall,</p><br></br>
-          <p>Humpty Dumpty had a great fall.</p><br></br>
-          <p>All the king's horses and all the king's men</p><br></br>
-          <p>Couldn't put Humpty together again.</p><br></br>
-          <p>HURRY - KEEP TYPING TO PREVENT HIS DEMISE!</p><br></br>
+          <p>{this.state.instructions}</p><br></br>
           <div>
-            <form onSubmit={this.startGame}>
+            <form onSubmit={this.startGame} autoComplete="off">
               <p></p>
-              <input placeholder="Who are you?" value={this.state.username} onChange={this.handleUserNameChange} autoFocus/>
+              <input id="user-input" placeholder="Who are you?" value={this.state.username} onChange={this.handleUserNameChange} autoFocus/>
             </form>
           </div>
-          <div id="overlay-start" onClick={this.startGame} className="blinking">START GAME</div>
+          <div id="overlay-start" onClick={this.startGame} className="blinking">{this.state.prompt}</div>
         </div>
-
+    
         <div className="timer">
           <h1>{this.state.time}</h1>
         </div>

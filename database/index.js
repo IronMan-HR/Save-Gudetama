@@ -1,7 +1,6 @@
 const mysql = require('mysql');
 var fs = require('fs');
 var path = require('path');
-// const mysqlConfig = require('./config.js');
 
 const connection = mysql.createConnection({
   host: 'localhost',
@@ -18,6 +17,7 @@ connection.connect(function(err) {
   }
 });
 
+// very annoying, but this just reads dictionary.txt, splits it into an array of words, shuffles, and builds dictionary object to send back to client
 var get1000Words = (callback) => {
   var wordsString = '';
   var readStream = fs.createReadStream(path.join(__dirname, '/dictionary.txt'));
@@ -26,26 +26,27 @@ var get1000Words = (callback) => {
   });
 
   readStream.on('end', () => {
-    var words = {
+    var dictionary = {
       all: [],
       roundOne: [],
       roundTwo: [],
       roundThree: [],
     };
 
+    // this is to handle Windows computers, which add '\r' at the end of every line:
     if (wordsString.slice(0, 20).includes('\r\n')) {
-      words.all = wordsString.split('\r\n');
+      dictionary.all = wordsString.split('\r\n');
     } else {
-      words.all = wordsString.split('\n');
+      dictionary.all = wordsString.split('\n');
     }
     
-    for (var i = 0; i < words.all.length; i++) { 
-      if (words.all[i].length < 5) {
-        words.roundOne.push(words.all[i]);
-      } else if (words.all[i].length < 8) {
-        words.roundTwo.push(words.all[i]);
+    for (var i = 0; i < dictionary.all.length; i++) { 
+      if (dictionary.all[i].length < 5) {
+        dictionary.roundOne.push(dictionary.all[i]);
+      } else if (dictionary.all[i].length < 8) {
+        dictionary.roundTwo.push(dictionary.all[i]);
       } else {
-        words.roundThree.push(words.all[i]);
+        dictionary.roundThree.push(dictionary.all[i]);
       } 
     }
 
@@ -60,23 +61,23 @@ var get1000Words = (callback) => {
       return a;
     }
 
-    shuffle(words.all);
-    shuffle(words.roundOne);
-    shuffle(words.roundTwo);
-    shuffle(words.roundThree);
+    shuffle(dictionary.all);
+    shuffle(dictionary.roundOne);
+    shuffle(dictionary.roundTwo);
+    shuffle(dictionary.roundThree);
 
-    words.all.slice(0, 1000);
-    words.roundOne = words.roundOne.slice(0, 400);
-    words.roundTwo = words.roundTwo.slice(0, 300);
-    words.roundThree = words.roundThree.slice(0, 300);
+    dictionary.all = dictionary.all.slice(0, 1000);
+    dictionary.roundOne = dictionary.roundOne.slice(0, 400);
+    dictionary.roundTwo = dictionary.roundTwo.slice(0, 300);
+    dictionary.roundThree = dictionary.roundThree.slice(0, 300);
 
-    callback(words);
+    callback(dictionary);
   });
 }
 
-//FUNCTIONS TO INTERACT WITH DATABASE GO HERE:
+//FUNCTIONS TO INTERACT WITH DATABASE:
 
-//function to retrieve all users
+// retrieve all users
 const retrieveUsers = function(callback) {
   let queryStr = `SELECT * FROM users ORDER BY high_score DESC LIMIT 10`;
   connection.query(queryStr, (err, data) => {
@@ -88,7 +89,7 @@ const retrieveUsers = function(callback) {
   });
 };
 
-//function to retrieve high score for a certain user
+// retrieve high score for a certain user
 // const retrieveHighScore = function(user, callback) {
 //   let queryStr = `SELECT high_score FROM users WHERE username = '${user.username}'`;
 //   connection.query(queryStr, (err, data) => {
@@ -97,7 +98,7 @@ const retrieveUsers = function(callback) {
 //   });
 // };
 
-//function to check if a user has played before, and add or update accordingly
+//check if a user has played before, and add or update accordingly
 const addUserOrUpdateScore = function(userWithScore, callback) {
   let queryStr = `SELECT * FROM users WHERE username = '${userWithScore.username}'`;
   connection.query(queryStr, (err, result) => {
@@ -119,7 +120,6 @@ const addUserOrUpdateScore = function(userWithScore, callback) {
         // only update if they beat their personal best
         let queryStr3 = `UPDATE users SET high_score = ${userWithScore.high_score} WHERE username='${userWithScore.username}' AND high_score < ${userWithScore.high_score}`;
         connection.query(queryStr3, (err, result) => {
-          console.log('update result is', result);
           if (err) {
             console.error('error updating high score', err);
           } else if (result.changedRows === 0) {
