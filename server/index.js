@@ -22,12 +22,15 @@ app.post('/wordgame', (req,res) => {
   });
 });
 
+// get words from dictionary, send back to client
 app.get('/dictionary', (req, res) => {
   get1000Words(results => {
     res.send(results);
   });
 });
 
-app.listen(3000, function() {
+var port = process.env.PORT || 3000;
+
+app.listen(port, function() {
   console.log('listening on port 3000!');
 });
