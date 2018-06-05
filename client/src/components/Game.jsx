@@ -22,13 +22,19 @@ class Game extends React.Component {
     this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
     this.addWord = this.addWord.bind(this);
-    this.startGame = this.startGame.bind(this);
     this.stopGame = this.stopGame.bind(this);
     this.sendScore = this.sendScore.bind(this);
     this.handleUserNameChange = this.handleUserNameChange.bind(this);
-    this.updateWordList = this.updateWordList.bind(this);
-    socket.on('receive from opponent', (payload) => {
-      this.updateWordList(payload);
+    this.getReady = this.getReady.bind(this);
+    socket.on('receive words from opponent', (payload) => {
+      this.updateOpponentWordList(payload);
+    });
+    socket.on('startGame', () => {
+      this.startGame();
+    });
+    socket.on('theyLost', () => {
+      // this is bad, eventually put a red x over their bricks or something
+      document.getElementById('their-game').style.backgroundColor = "red";
     });
   }
 
@@ -42,19 +48,19 @@ class Game extends React.Component {
       console.error(err);
     });
 
-    socket.emit('room', {room: this.props.room});
+    socket.emit('entering room', {room: this.props.room});
   }
 
   componentDidUpdate(prevProps, prevState) {
     if (this.state.words.length !== prevState.words.length) {
-      socket.emit('send to opponent', {
+      socket.emit('send words to opponent', {
         room: this.props.room,
         newWords: this.state.words,
       }) 
     }
   }
 
-  updateWordList(words) {
+  updateOpponentWordList(words) {
     this.setState({
       theirWords: words
     })
@@ -90,6 +96,8 @@ class Game extends React.Component {
     document.getElementById('gudetama').style.display = "none";
     document.getElementById('typing-input').disabled = true;
     document.getElementById('overlay').style.display = "block";
+    document.getElementById('starter-form').disabled = false;
+    document.getElementById('user-input').disabled = false;
 
     // enables user to hit "enter" after 2 seconds to restart game
     setTimeout(() => {
@@ -106,8 +114,17 @@ class Game extends React.Component {
     });
   }
 
-  startGame(e) {
+  getReady(e) {
     e.preventDefault();
+    document.getElementById('starter-form').disabled = true;
+    document.getElementById('user-input').disabled = true;
+    this.setState({
+      prompt: 'WAITING...',
+    });
+    socket.emit('ready', {room: this.props.room});
+  }
+
+  startGame() {
     document.getElementById('typing-input').disabled = false;
     document.getElementById('typing-input').focus();
     document.getElementById('overlay').style.display = "none";
@@ -126,6 +143,7 @@ class Game extends React.Component {
       // ends game or changes background color of gudetama based on length of "words" array
       if (this.state.words.length >= 20) {
         clearTimeout(step);
+        socket.emit('iLost', {room: this.props.room});
         this.stopGame();
       } else if (this.state.words.length > 15) {
         document.getElementById('gudetama').style.backgroundColor = "rgba(255, 0, 0, 1)";
@@ -211,7 +229,7 @@ class Game extends React.Component {
         <div id="overlay">
           <p>{this.state.instructions}</p><br></br>
           <div>
-            <form onSubmit={this.startGame} autoComplete="off">
+            <form id="starter-form" onSubmit={this.getReady} autoComplete="off">
               <p></p>
               <input id="user-input" placeholder="Who are you?" value={this.state.username} onChange={this.handleUserNameChange} autoFocus/>
             </form>
@@ -235,7 +253,7 @@ class Game extends React.Component {
             </form>
           </div>
           {/* their game: */}
-          <div className="play"> 
+          <div className="play" id="their-game"> 
             {this.state.theirWords.map((word, index) => {
               return <Brick word={word} key={index} />
             })}

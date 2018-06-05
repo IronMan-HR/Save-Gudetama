@@ -37,22 +37,37 @@ var server = app.listen(port, function() {
 
 var io = require('socket.io')(server);
 
-io.on('connection', (socket) => {  
+var readyRooms = {};
+
+io.on('connection', (socket) => { 
   console.log('a user connected');
 
   socket.on('disconnect', () => {
     console.log('user disconnected');
   });
 
-  socket.on('room', function(data) {
+  socket.on('entering room', function(data) {
     socket.join(data.room);
   });
 
   socket.on('leaving room', (data) => {
-    socket.leave(data.room)
+    socket.leave(data.room);
   });
 
-  socket.on('send to opponent', function(data) {
-    socket.broadcast.to(data.room).emit('receive from opponent', data.newWords);
+  socket.on('ready', (data) => {
+    if (!readyRooms[data.room]) {
+      readyRooms[data.room] = true;
+    } else {
+      io.in(data.room).emit('startGame');
+    }
+  });
+
+  socket.on('iLost', (data) => {
+    socket.broadcast.to(data.room).emit('theyLost');
+    readyRooms[data.room] = false;
+  });
+
+  socket.on('send words to opponent', function(data) {
+    socket.broadcast.to(data.room).emit('receive words from opponent', data.newWords);
   });
 });
