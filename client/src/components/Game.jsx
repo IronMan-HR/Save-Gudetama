@@ -12,7 +12,7 @@ class Game extends React.Component {
       username: '',
       dictionary: {},
       words: [],
-      theirWords: ["this", "is", "a", "test"],
+      theirWords: [],
       time: 0,
       timeInterval: 1000,
       round: 'all',
