@@ -20,7 +20,6 @@ class Scoreboard extends React.Component {
   updateScoreboard () {
   	axios.get("/wordgame")
   	.then((results) => {
-      console.log('what is results', results);
   		this.setState({
   			highscore: results.data
   		});
