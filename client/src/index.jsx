@@ -5,7 +5,10 @@ import Scoreboard from './components/Scoreboard.jsx';
 
 class App extends React.Component {
   constructor(props) {
-    super(props);   
+    super(props);
+    this.state = {
+      room: 'scottVsLina',
+    }   
   }
 
   render() {
@@ -15,12 +18,13 @@ class App extends React.Component {
           <h1>SAVE GUDETAMA!</h1>
         </nav>  
         <div className="game-container">
-          <Game  />
+          <Game room={this.state.room}/>
           <Scoreboard />
         </div>
       </div>
     )
   }
 }
+
 
 ReactDOM.render(<App />, document.getElementById('app'));

@@ -1,6 +1,8 @@
 import React from 'react';
 import Brick from './Brick.jsx';
 import axios from 'axios';
+const io = require('socket.io-client'); 
+const socket = io();
 
 class Game extends React.Component {
   constructor(props) {
@@ -10,6 +12,7 @@ class Game extends React.Component {
       username: '',
       dictionary: {},
       words: [],
+      theirWords: [],
       time: 0,
       timeInterval: 1000,
       round: 'all',
@@ -23,6 +26,10 @@ class Game extends React.Component {
     this.stopGame = this.stopGame.bind(this);
     this.sendScore = this.sendScore.bind(this);
     this.handleUserNameChange = this.handleUserNameChange.bind(this);
+    this.updateWordList = this.updateWordList.bind(this);
+    socket.on('receive from opponent', (payload) => {
+      this.updateWordList(payload);
+    });
   }
 
   componentDidMount() {
@@ -33,6 +40,29 @@ class Game extends React.Component {
       })
     }).catch(err => {
       console.error(err);
+    });
+
+    socket.emit('room', {room: this.props.room});
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+    if (this.state.words.length !== prevState.words.length) {
+      socket.emit('send to opponent', {
+        room: this.props.room,
+        newWords: this.state.words,
+      }) 
+    }
+  }
+
+  updateWordList(words) {
+    this.setState({
+      theirWords: words
+    })
+  }
+
+  componentWillUnmount() {  
+    socket.emit('leaving room', {
+      room: this.props.room
     });
   }
 
@@ -149,7 +179,8 @@ class Game extends React.Component {
 
   handleSubmit(e) {
     e.preventDefault();
-    var index = this.state.words.indexOf(this.state.userInput);
+    var submittedWord = this.state.userInput;
+    var index = this.state.words.indexOf(submittedWord);
     
     // check if what they typed is in our "words" array
     if (index !== -1) {
@@ -192,16 +223,23 @@ class Game extends React.Component {
           <h1>{this.state.time}</h1>
         </div>
 
-        {/* <div className="wall"></div> */}
-
-        <div className="play" > 
-          {this.state.words.map((word, index) => {
-            return <Brick word={word} key={index} />
-          })}
-          <div id="gudetama" ></div>
-          <form onSubmit={this.handleSubmit} autoComplete="off" >
-            <input id="typing-input" value={this.state.userInput} onChange={this.handleChange} />
-          </form>
+        <div className="board">
+          {/* your game: */}
+          <div className="play" > 
+            {this.state.words.map((word, index) => {
+              return <Brick word={word} key={index} />
+            })}
+            <div id="gudetama" ></div>
+            <form onSubmit={this.handleSubmit} autoComplete="off" >
+              <input id="typing-input" value={this.state.userInput} onChange={this.handleChange} />
+            </form>
+          </div>
+          {/* their game: */}
+          <div className="play"> 
+            {this.state.theirWords.map((word, index) => {
+              return <Brick word={word} key={index} />
+            })}
+          </div>
         </div>
       </div>
     )

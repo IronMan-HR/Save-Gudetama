@@ -3,7 +3,7 @@ var bodyParser = require('body-parser');
 var axios = require('axios');
 var {retrieveUsers, addUserOrUpdateScore, get1000Words} = require('../database/index.js');
 
-var app = express(); 
+var app = express();
 
 app.use(express.static(__dirname + '/../client/dist'));
 app.use(bodyParser.json());
@@ -29,8 +29,30 @@ app.get('/dictionary', (req, res) => {
   });
 });
 
-var port = process.env.PORT || 3000;
+var port = process.env.PORT || 5000;
 
-app.listen(port, function() {
-  console.log('listening on port 3000!');
+var server = app.listen(port, function() {
+  console.log('listening on port 5000!');
+});
+
+var io = require('socket.io')(server);
+
+io.on('connection', (socket) => {  
+  console.log('a user connected');
+
+  socket.on('disconnect', () => {
+    console.log('user disconnected');
+  });
+
+  socket.on('room', function(data) {
+    socket.join(data.room);
+  });
+
+  socket.on('leaving room', (data) => {
+    socket.leave(data.room)
+  });
+
+  socket.on('send to opponent', function(data) {
+    socket.broadcast.to(data.room).emit('receive from opponent', data.newWords);
+  });
 });
