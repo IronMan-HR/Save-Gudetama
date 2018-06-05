@@ -10,6 +10,7 @@ class Game extends React.Component {
       username: '',
       dictionary: {},
       words: [],
+      theirWords: ["this", "is", "a", "test"],
       time: 0,
       timeInterval: 1000,
       round: 'all',
@@ -192,16 +193,23 @@ class Game extends React.Component {
           <h1>{this.state.time}</h1>
         </div>
 
-        {/* <div className="wall"></div> */}
-
-        <div className="play" > 
-          {this.state.words.map((word, index) => {
-            return <Brick word={word} key={index} />
-          })}
-          <div id="gudetama" ></div>
-          <form onSubmit={this.handleSubmit} autoComplete="off" >
-            <input id="typing-input" value={this.state.userInput} onChange={this.handleChange} />
-          </form>
+        <div className="board">
+          {/* your game: */}
+          <div className="play" > 
+            {this.state.words.map((word, index) => {
+              return <Brick word={word} key={index} />
+            })}
+            <div id="gudetama" ></div>
+            <form onSubmit={this.handleSubmit} autoComplete="off" >
+              <input id="typing-input" value={this.state.userInput} onChange={this.handleChange} />
+            </form>
+          </div>
+          {/* their game: */}
+          <div className="play"> 
+            {this.state.theirWords.map((word, index) => {
+              return <Brick word={word} key={index} />
+            })}
+          </div>
         </div>
       </div>
     )

@@ -29,8 +29,8 @@ app.get('/dictionary', (req, res) => {
   });
 });
 
-var port = process.env.PORT || 3000;
+var port = process.env.PORT || 5000;
 
 app.listen(port, function() {
-  console.log('listening on port 3000!');
+  console.log('listening on port 5000!');
 });
