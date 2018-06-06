@@ -37,7 +37,7 @@ var server = app.listen(port, function() {
 
 var io = require('socket.io')(server);
 
-var readyRooms = {};
+var rooms = {};
 
 io.on('connection', (socket) => { 
   console.log('a user connected');
@@ -48,23 +48,24 @@ io.on('connection', (socket) => {
 
   socket.on('entering room', function(data) {
     socket.join(data.room);
+    rooms[data.room] = {};
   });
 
   socket.on('leaving room', (data) => {
     socket.leave(data.room);
+    delete rooms[data.room];
   });
 
   socket.on('ready', (data) => {
-    if (!readyRooms[data.room]) {
-      readyRooms[data.room] = true;
-    } else {
+    rooms[data.room][data.username] = true;
+    if (Object.keys(rooms[data.room]).length === 2) {
       io.in(data.room).emit('startGame');
     }
   });
 
-  socket.on('iLost', (data) => {
-    socket.broadcast.to(data.room).emit('theyLost');
-    readyRooms[data.room] = false;
+  socket.on('i lost', (data) => {
+    socket.broadcast.to(data.room).emit('they lost');
+    delete rooms[data.room][data.username];
   });
 
   socket.on('send words to opponent', function(data) {

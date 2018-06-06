@@ -9,7 +9,6 @@ class Game extends React.Component {
     super(props);
     this.state = {
       userInput: '',
-      username: '',
       dictionary: {},
       words: [],
       theirWords: [],
@@ -24,7 +23,6 @@ class Game extends React.Component {
     this.addWord = this.addWord.bind(this);
     this.stopGame = this.stopGame.bind(this);
     this.sendScore = this.sendScore.bind(this);
-    this.handleUserNameChange = this.handleUserNameChange.bind(this);
     this.getReady = this.getReady.bind(this);
     socket.on('receive words from opponent', (payload) => {
       this.updateOpponentWordList(payload);
@@ -32,7 +30,7 @@ class Game extends React.Component {
     socket.on('startGame', () => {
       this.startGame();
     });
-    socket.on('theyLost', () => {
+    socket.on('they lost', () => {
       // this is bad, eventually put a red x over their bricks or something
       document.getElementById('their-game').style.backgroundColor = "red";
     });
@@ -60,16 +58,16 @@ class Game extends React.Component {
     }
   }
 
-  updateOpponentWordList(words) {
-    this.setState({
-      theirWords: words
-    })
-  }
-
   componentWillUnmount() {  
     socket.emit('leaving room', {
       room: this.props.room
     });
+  }
+
+  updateOpponentWordList(words) {
+    this.setState({
+      theirWords: words
+    })
   }
 
   addWord() {
@@ -106,7 +104,7 @@ class Game extends React.Component {
       }
     }, 2000);
     
-    this.sendScore(this.state.username, this.state.time);
+    this.sendScore(this.props.username, this.state.time);
     
     this.setState({
       instructions: 'GAME OVER',
@@ -121,7 +119,7 @@ class Game extends React.Component {
     this.setState({
       prompt: 'WAITING...',
     });
-    socket.emit('ready', {room: this.props.room});
+    socket.emit('ready', {room: this.props.room, username: this.props.username});
   }
 
   startGame() {
@@ -138,12 +136,13 @@ class Game extends React.Component {
         go();
       }, this.state.timeInterval);
 
+      // adds a brick:
       this.addWord();
 
       // ends game or changes background color of gudetama based on length of "words" array
       if (this.state.words.length >= 20) {
         clearTimeout(step);
-        socket.emit('iLost', {room: this.props.room});
+        socket.emit('i lost', {room: this.props.room, username: this.props.username});
         this.stopGame();
       } else if (this.state.words.length > 15) {
         document.getElementById('gudetama').style.backgroundColor = "rgba(255, 0, 0, 1)";
@@ -189,12 +188,6 @@ class Game extends React.Component {
     })
   }
 
-  handleUserNameChange(e) {
-    this.setState({
-      username: e.target.value,
-    });
-  }
-
   handleSubmit(e) {
     e.preventDefault();
     var submittedWord = this.state.userInput;
@@ -231,7 +224,7 @@ class Game extends React.Component {
           <div>
             <form id="starter-form" onSubmit={this.getReady} autoComplete="off">
               <p></p>
-              <input id="user-input" placeholder="Who are you?" value={this.state.username} onChange={this.handleUserNameChange} autoFocus/>
+              <input id="user-input" placeholder="Who are you?" value={this.props.username} onChange={this.props.handleUserNameChange} autoFocus/>
             </form>
           </div>
           <div id="overlay-start" onClick={this.startGame} className="blinking">{this.state.prompt}</div>
