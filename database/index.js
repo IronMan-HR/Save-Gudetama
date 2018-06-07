@@ -1,11 +1,11 @@
 const mysql = require('mysql');
-var fs = require('fs');
-var path = require('path');
+const fs = require('fs');
+const path = require('path');
 
 const connection = mysql.createConnection({
   host: 'localhost',
   user: 'root', 
-  password: '', 
+  password: 'password', 
   database: 'humptydumpty',
 });
 
@@ -40,6 +40,7 @@ var get1000Words = (callback) => {
       dictionary.all = wordsString.split('\n');
     }
     
+    // adds each word to rounds 1, 2, or 3 based on word length
     for (var i = 0; i < dictionary.all.length; i++) { 
       if (dictionary.all[i].length < 5) {
         dictionary.roundOne.push(dictionary.all[i]);
@@ -77,7 +78,7 @@ var get1000Words = (callback) => {
 
 //FUNCTIONS TO INTERACT WITH DATABASE:
 
-// retrieve all users
+// retrieve top 10 users and their high scores
 const retrieveUsers = function(callback) {
   let queryStr = `SELECT * FROM users ORDER BY high_score DESC LIMIT 10`;
   connection.query(queryStr, (err, data) => {
@@ -106,7 +107,7 @@ const addUserOrUpdateScore = function(userWithScore, callback) {
       console.error('error retrieving user from database', err);
     } else {
       if (result.length === 0) {
-        // this is if it's a new player
+        // if new user, add them to the database
         let queryStr2 = `INSERT INTO users (username, high_score) VALUES ('${userWithScore.username}', ${userWithScore.high_score})`;
         connection.query(queryStr2, (err) => {
           if (err) {
@@ -116,8 +117,7 @@ const addUserOrUpdateScore = function(userWithScore, callback) {
           }
         });
       } else {
-        // this is if the player has previously played the game.
-        // only update if they beat their personal best
+        // else only update if user beat their personal best score
         let queryStr3 = `UPDATE users SET high_score = ${userWithScore.high_score} WHERE username='${userWithScore.username}' AND high_score < ${userWithScore.high_score}`;
         connection.query(queryStr3, (err, result) => {
           if (err) {

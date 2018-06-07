@@ -8,23 +8,23 @@ var app = express();
 app.use(express.static(__dirname + '/../client/dist'));
 app.use(bodyParser.json());
 
-// querying all users from the database 
+// querying all users and scores from the database 
 app.get('/wordgame', (req, res) => { 
   retrieveUsers((data) => {
     res.send(data);
   });
 });
 
-// at end of game, get a username and high score, add to or update db
+// at end of game, add to or update db with username and high score
 app.post('/wordgame', (req,res) => {
-  addUserOrUpdateScore(req.body, function(results) {
+  addUserOrUpdateScore(req.body, (results) => {
     res.status(201).send(results);
   });
 });
 
 // get words from dictionary, send back to client
 app.get('/dictionary', (req, res) => {
-  get1000Words(results => {
+  get1000Words((results) => {
     res.send(results);
   });
 });
@@ -46,7 +46,7 @@ io.on('connection', (socket) => {
     console.log('user disconnected');
   });
 
-  socket.on('entering room', function(data) {
+  socket.on('entering room', (data) => {
     socket.join(data.room);
     rooms[data.room] = {};
   });
@@ -58,7 +58,7 @@ io.on('connection', (socket) => {
 
   socket.on('ready', (data) => {
     rooms[data.room][data.username] = true;
-    if (Object.keys(rooms[data.room]).length === 2) {
+    if (Object.keys(rooms[data.room]).length === 2) { //start the game with 2 players in the room
       io.in(data.room).emit('startGame');
     }
   });
