@@ -85,8 +85,9 @@ class Game extends React.Component {
     document.getElementById('typing-input').disabled = false;
     document.getElementById('typing-input').focus();
     document.getElementById('overlay').style.display = "none";
-    document.getElementById('gudetama').style.display = "block";
-    document.getElementById('their-gudetama').style.display = "block";
+    document.getElementById('gudetama').style.display = "inline-block";
+    document.getElementById('their-gudetama').style.display = "inline-block";
+
     // long function to define what happens at every interval
     var go = () => {
       // creates a loop by calling itself:
@@ -225,7 +226,8 @@ class Game extends React.Component {
     this.sendScore(this.props.username, this.state.time);
     
     this.setState({
-      instructions: ['GAME OVER'],
+      // maybe find a way to compare your score vs opponent's score and show YOU WIN/YOU LOSE
+      instructions: ['GAME OVER', `YOU SCORED: ${this.state.time}`, 'YOUR OPPONENT SCORED: '],
       prompt: 'REPLAY',
     });
   }
@@ -237,6 +239,7 @@ class Game extends React.Component {
           <div>{this.state.instructions.map((line, index) => {
             return (<span key={index}>{line}<br></br></span>)
           })}</div>
+          <div id="crackedegg"></div>
           <div>
             <form id="starter-form" onSubmit={this.getReady} autoComplete="off">
               <input id="user-input" placeholder="Who are you?" value={this.props.username} onChange={this.props.handleUserNameChange} autoFocus/>
