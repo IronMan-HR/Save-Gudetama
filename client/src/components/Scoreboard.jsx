@@ -6,25 +6,23 @@ class Scoreboard extends React.Component {
     super(props);
     this.state = {
       highscore: [], 
-      rank: ['1ST', '2ND', '3RD', '4TH', '5TH','6TH', '7TH', '8TH', '9TH', '10TH'],
+      rank: ['1ST', '2ND', '3RD', '4TH', '5TH', '6TH', '7TH', '8TH', '9TH', '10TH'],
       counter: 0
     } 
     this.updateScoreboard = this.updateScoreboard.bind(this);
   }
  
-  
   componentDidMount() {
     this.updateScoreboard(); 
   }
 
-  updateScoreboard () {
+  updateScoreboard() {
   	axios.get("/wordgame")
   	.then((results) => {
   		this.setState({
   			highscore: results.data
   		});
-    }
-  	)
+    });
   }
 
   render() {
@@ -43,9 +41,7 @@ class Scoreboard extends React.Component {
         )} 
       </div>
   	) 
-  	 
   }
-
 } 
 
 export default Scoreboard;

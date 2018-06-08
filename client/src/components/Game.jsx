@@ -15,15 +15,19 @@ class Game extends React.Component {
       time: 0,
       timeInterval: 1000,
       round: 'all',
-      instructions: `Humpty Dumpty sat on a wall,\nHumpty Dumpty had a great fall.\nAll the king's horses and all the king's men\nCouldn't put Humpty together again.\nHURRY - KEEP TYPING TO PREVENT HIS DEMISE!`,
+      instructions: ["Humpty Dumpty sat on a wall,", "Humpty Dumpty had a great fall.", "All the king's horses and all the king's men", "Couldn't put Humpty together again.", "HURRY - KEEP TYPING TO PREVENT HIS DEMISE!"],
       prompt: 'START GAME',
     }
+    
+    this.getReady = this.getReady.bind(this);
+    this.startGame = this.startGame.bind(this);
+    this.addWord = this.addWord.bind(this);
+    this.updateOpponentWordList = this.updateOpponentWordList.bind(this);
     this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
-    this.addWord = this.addWord.bind(this);
-    this.stopGame = this.stopGame.bind(this);
     this.sendScore = this.sendScore.bind(this);
-    this.getReady = this.getReady.bind(this);
+    this.stopGame = this.stopGame.bind(this);
+
     socket.on('receive words from opponent', (payload) => {
       this.updateOpponentWordList(payload);
     });
@@ -36,6 +40,7 @@ class Game extends React.Component {
     });
   }
 
+  // get words from dictionary and join socket
   componentDidMount() {
     axios.get('/dictionary')
     .then(results => {
@@ -45,10 +50,10 @@ class Game extends React.Component {
     }).catch(err => {
       console.error(err);
     });
-
     socket.emit('entering room', {room: this.props.room});
   }
 
+  // sends same words to opponent
   componentDidUpdate(prevProps, prevState) {
     if (this.state.words.length !== prevState.words.length) {
       socket.emit('send words to opponent', {
@@ -58,60 +63,14 @@ class Game extends React.Component {
     }
   }
 
+  // leave socket (deletes room)
   componentWillUnmount() {  
     socket.emit('leaving room', {
       room: this.props.room
     });
   }
 
-  updateOpponentWordList(words) {
-    this.setState({
-      theirWords: words
-    })
-  }
-
-  addWord() {
-    var availableWords = this.state.dictionary[this.state.round];
-    var newWord = availableWords[Math.floor(Math.random() * availableWords.length)];
-    this.setState({
-      words: [...this.state.words, newWord]
-    });
-  }
-
-  sendScore(username, score) {
-    axios.post('/wordgame', {
-      "username": username,
-      "high_score": score
-    })
-    .then(result => {
-      console.log(result);
-    }).catch(err => {
-      console.error(err);
-    })
-  }
-
-  stopGame() {
-    document.getElementById('gudetama').style.display = "none";
-    document.getElementById('typing-input').disabled = true;
-    document.getElementById('overlay').style.display = "block";
-    document.getElementById('starter-form').disabled = false;
-    document.getElementById('user-input').disabled = false;
-
-    // enables user to hit "enter" after 2 seconds to restart game
-    setTimeout(() => {
-      if (document.getElementById('overlay').display !== "none") {
-        document.getElementById("user-input").focus();
-      }
-    }, 2000);
-    
-    this.sendScore(this.props.username, this.state.time);
-    
-    this.setState({
-      instructions: 'GAME OVER',
-      prompt: 'REPLAY',
-    });
-  }
-
+  // hides starter form and user input, waits for another player to start game
   getReady(e) {
     e.preventDefault();
     document.getElementById('starter-form').disabled = true;
@@ -127,8 +86,7 @@ class Game extends React.Component {
     document.getElementById('typing-input').focus();
     document.getElementById('overlay').style.display = "none";
     document.getElementById('gudetama').style.display = "block";
-    document.getElementById('gudetama').style.backgroundColor = "rgba(255, 0, 0, 0)";
-
+    document.getElementById('their-gudetama').style.display = "block";
     // long function to define what happens at every interval
     var go = () => {
       // creates a loop by calling itself:
@@ -140,6 +98,7 @@ class Game extends React.Component {
       this.addWord();
 
       // ends game or changes background color of gudetama based on length of "words" array
+      // (as bricks build up, background turns a darker red to signify danger)
       if (this.state.words.length >= 20) {
         clearTimeout(step);
         socket.emit('i lost', {room: this.props.room, username: this.props.username});
@@ -151,6 +110,7 @@ class Game extends React.Component {
       }
 
       // updates the time and speeds up the game accordingly 
+      // (as timeInterval decreases, words appear at a faster rate)
       var newTime = this.state.time + 1;
       if (newTime > 20) {
         this.setState({
@@ -182,37 +142,91 @@ class Game extends React.Component {
   
   }
 
+  // pulls random word from dictionary obj and adds it to words state
+  addWord() {
+    var availableWords = this.state.dictionary[this.state.round];
+    var newWord = availableWords[Math.floor(Math.random() * availableWords.length)];
+    this.setState({
+      words: [...this.state.words, newWord]
+    });
+  }
+
+  // updates opponent's words with current words
+  updateOpponentWordList(words) {
+    this.setState({
+      theirWords: words
+    })
+  }
+
+  // updates userInput with what user is currently typing
   handleChange(e) {
     this.setState({
       userInput: e.target.value,
     })
   }
 
+  // handles a submitted word when user hits enter
   handleSubmit(e) {
     e.preventDefault();
     var submittedWord = this.state.userInput;
     var index = this.state.words.indexOf(submittedWord);
     
     // check if what they typed is in our "words" array
+    // flash green for a correctly typed word and remove word from "words" array
     if (index !== -1) {
-      document.getElementById("typing-input").style.backgroundColor = "green";
-      setTimeout(() => {
-        document.getElementById("typing-input").style.backgroundColor = "white";
-      }, 100);
+      document.getElementById('typing-input').style.backgroundColor = "green";
       var newWords = this.state.words.slice();
       newWords.splice(index, 1);
       this.setState({
         words: newWords,
       });
     } else {
-      document.getElementById("typing-input").style.backgroundColor = "red";
-      setTimeout(() => {
-        document.getElementById("typing-input").style.backgroundColor = "white";
-      }, 100);
+      // else flash red for a mistyped word
+      document.getElementById('typing-input').style.backgroundColor = "red";
     }
+
+    setTimeout(() => {
+      document.getElementById('typing-input').style.backgroundColor = "white";
+    }, 100);
 
     this.setState({
       userInput: '',
+    });
+  }
+
+  // upon game over, sends username and score to database to be added/updated
+  sendScore(username, score) {
+    axios.post('/wordgame', {
+      "username": username,
+      "high_score": score
+    })
+    .then(result => {
+      console.log(result);
+    }).catch(err => {
+      console.error(err);
+    })
+  }
+
+  stopGame() {
+    document.getElementById('typing-input').disabled = true;
+    document.getElementById('overlay').style.display = "block";
+    document.getElementById('gudetama').style.display = "none";
+    document.getElementById('their-gudetama').style.display = "none";
+    document.getElementById('starter-form').disabled = false;
+    document.getElementById('user-input').disabled = false;
+
+    // enables user to hit "enter" after 2 seconds to restart game
+    setTimeout(() => {
+      if (document.getElementById('overlay').display !== "none") {
+        document.getElementById('user-input').focus();
+      }
+    }, 2000);
+    
+    this.sendScore(this.props.username, this.state.time);
+    
+    this.setState({
+      instructions: ['GAME OVER'],
+      prompt: 'REPLAY',
     });
   }
 
@@ -220,10 +234,11 @@ class Game extends React.Component {
     return (
       <div className="game">
         <div id="overlay">
-          <p>{this.state.instructions}</p><br></br>
+          <div>{this.state.instructions.map((line, index) => {
+            return (<span key={index}>{line}<br></br></span>)
+          })}</div>
           <div>
             <form id="starter-form" onSubmit={this.getReady} autoComplete="off">
-              <p></p>
               <input id="user-input" placeholder="Who are you?" value={this.props.username} onChange={this.props.handleUserNameChange} autoFocus/>
             </form>
           </div>
@@ -236,20 +251,25 @@ class Game extends React.Component {
 
         <div className="board">
           {/* your game: */}
-          <div className="play" > 
+          <div className="play"> 
             {this.state.words.map((word, index) => {
               return <Brick word={word} key={index} />
             })}
-            <div id="gudetama" ></div>
-            <form onSubmit={this.handleSubmit} autoComplete="off" >
+            <div id="gudetama"></div>
+            <form onSubmit={this.handleSubmit} autoComplete="off">
               <input id="typing-input" value={this.state.userInput} onChange={this.handleChange} />
             </form>
           </div>
+
           {/* their game: */}
           <div className="play" id="their-game"> 
             {this.state.theirWords.map((word, index) => {
               return <Brick word={word} key={index} />
             })}
+            <div id="their-gudetama"></div>
+            <form autoComplete="off">
+              <input value="OPPONENT" />
+            </form>
           </div>
         </div>
       </div>
