@@ -25,25 +25,27 @@ html, body, #app, .app-container {
 #overlay {
   position: fixed;
   display: block;
-  height: 50%;
-  width: 50%;
+  height: 75%;
+  width: 65%;
   top: 0; 
   left: 0;
   right: 0;
   bottom: 0;
   margin: auto;
-  background-color: rgba(0, 0, 0, 0.75);
+  background-color: rgba(0, 0, 0, 0.85);
   z-index: 2;
   /* align-items: center; */
   /*justify-content: center;*/
   color: white;
   font-size: 14px;
-  line-height: 130%; 
+  line-height: 180%; 
   padding: 2%;
+  text-align: center;
 }
 
 #overlay form {
   margin: auto;
+  padding: 2%;
   width: 60%;
   text-align: center;
 }
@@ -54,7 +56,7 @@ html, body, #app, .app-container {
 
 #overlay-start {
   font-size: 32px;
-  margin: 25px;
+  margin: 20px;
   text-align: center;
   cursor: pointer;
 }
@@ -84,7 +86,6 @@ nav {
 
 .game {
   width: 70%;
-
 }
 
 .scoreboard {
@@ -143,12 +144,18 @@ input {
   justify-content: center;
 }
 
-#gudetama {
+#gudetama, #their-gudetama {
   height: 170px;
   width: 80%;
   background-size: cover;
   border: 5px solid black;
   background-image: url("https://i.pinimg.com/originals/99/7c/90/997c901be018004a07d66ae4920fd3a6.png");
+}
+
+#crackedegg {
+  width: 45%;
+  height: 45%;
+  background: url("./assets/gudetama-cracked.gif") no-repeat center/cover;
 }
 
 .sbColumn {
