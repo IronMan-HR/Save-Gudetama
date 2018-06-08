@@ -15,7 +15,7 @@ class Game extends React.Component {
       time: 0,
       timeInterval: 1000,
       round: 'all',
-      instructions: `Humpty Dumpty sat on a wall,\nHumpty Dumpty had a great fall.\nAll the king's horses and all the king's men\nCouldn't put Humpty together again.\nHURRY - KEEP TYPING TO PREVENT HIS DEMISE!`,
+      instructions: ["Humpty Dumpty sat on a wall,", "Humpty Dumpty had a great fall.", "All the king's horses and all the king's men", "Couldn't put Humpty together again.", "HURRY - KEEP TYPING TO PREVENT HIS DEMISE!"],
       prompt: 'START GAME',
     }
     
@@ -86,8 +86,7 @@ class Game extends React.Component {
     document.getElementById('typing-input').focus();
     document.getElementById('overlay').style.display = "none";
     document.getElementById('gudetama').style.display = "block";
-    // document.getElementById('gudetama').style.backgroundColor = "rgba(255, 0, 0, 0)";
-
+    document.getElementById('their-gudetama').style.display = "block";
     // long function to define what happens at every interval
     var go = () => {
       // creates a loop by calling itself:
@@ -212,6 +211,7 @@ class Game extends React.Component {
     document.getElementById('typing-input').disabled = true;
     document.getElementById('overlay').style.display = "block";
     document.getElementById('gudetama').style.display = "none";
+    document.getElementById('their-gudetama').style.display = "none";
     document.getElementById('starter-form').disabled = false;
     document.getElementById('user-input').disabled = false;
 
@@ -225,7 +225,7 @@ class Game extends React.Component {
     this.sendScore(this.props.username, this.state.time);
     
     this.setState({
-      instructions: 'GAME OVER',
+      instructions: ['GAME OVER'],
       prompt: 'REPLAY',
     });
   }
@@ -234,7 +234,9 @@ class Game extends React.Component {
     return (
       <div className="game">
         <div id="overlay">
-          <p>{this.state.instructions}</p><br></br>
+          <div>{this.state.instructions.map((line, index) => {
+            return (<span key={index}>{line}<br></br></span>)
+          })}</div>
           <div>
             <form id="starter-form" onSubmit={this.getReady} autoComplete="off">
               <input id="user-input" placeholder="Who are you?" value={this.props.username} onChange={this.props.handleUserNameChange} autoFocus/>
@@ -264,7 +266,7 @@ class Game extends React.Component {
             {this.state.theirWords.map((word, index) => {
               return <Brick word={word} key={index} />
             })}
-            <div id="gudetama"></div>
+            <div id="their-gudetama"></div>
             <form autoComplete="off">
               <input value="OPPONENT" />
             </form>
