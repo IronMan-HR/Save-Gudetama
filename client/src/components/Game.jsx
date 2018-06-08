@@ -28,6 +28,10 @@ class Game extends React.Component {
     this.sendScore = this.sendScore.bind(this);
     this.stopGame = this.stopGame.bind(this);
 
+    var c = io.connect("localhost:5000", {query: this.state.time})
+    console.log('c', c)
+
+
     socket.on('receive words from opponent', (payload) => {
       this.updateOpponentWordList(payload);
     });
@@ -178,11 +182,13 @@ class Game extends React.Component {
       document.getElementById('typing-input').style.backgroundColor = "green";
       var newWords = this.state.words.slice();
       newWords.splice(index, 1);
+      playCorrect(); 
       this.setState({
         words: newWords,
       });
     } else {
       // else flash red for a mistyped word
+      playWrong(); 
       document.getElementById('typing-input').style.backgroundColor = "red";
     }
 
@@ -224,6 +230,8 @@ class Game extends React.Component {
     }, 2000);
     
     this.sendScore(this.props.username, this.state.time);
+
+    playGameOver();
     
     this.setState({
       // maybe find a way to compare your score vs opponent's score and show YOU WIN/YOU LOSE
@@ -237,6 +245,7 @@ class Game extends React.Component {
       <div className="game">
         <div id="overlay">
           <div>{this.state.instructions.map((line, index) => {
+            playStart();
             return (<span key={index}>{line}<br></br></span>)
           })}</div>
           <div id="crackedegg"></div>
