@@ -76,9 +76,6 @@ io.on('connection', (socket) => {
     socket.broadcast.to(data.room).emit('they lost', data.score);
     rooms[data.room][data.username] = 0;
     console.log('rooms is', rooms);
-    if (getPlayerCount(data.room) === 0) {
-      delete rooms[data.room];
-    }
   });
 
   socket.on('send words to opponent', function(data) {

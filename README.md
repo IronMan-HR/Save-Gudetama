@@ -9,3 +9,15 @@ Suggestions for where to go from here - take or leave!
 - display the round to user
 - add spedometer to show typing speed
 - CSS - center the cracked egg, show a different GIF depending on if you win or lose, improve the look of the loser's stack of bricks
+
+LOGIN AND CONFIGURATION INFO:
+
+App URL: https://tranquil-stream-98217.herokuapp.com/
+
+Heroku:
+scott.mccreary.11@gmail.com
+pw: IronMan-HR
+
+Database- AWS RDS:
+username: IronMan pw: IronMan-HR
+name: humptydumpty port: 3306
