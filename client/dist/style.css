@@ -1,25 +1,182 @@
+html, body, h1, h2, h3, h4, h5, h6, p, input, form, div, nav {
+  margin: 0;
+  padding: 0;
+}
+
+ul, li {
+  list-style: none;
+}
+
 * {
   box-sizing: border-box;
+  /*border: 1px solid black; */
 }
 
 html, body, #app, .app-container {
   height: 100%;
+  font-family: "Press Start 2P", cursive;
+  background: url("./assets/treebackground.png") center/cover;
 }
 
-.game, .scoreboard {
-  border: 1px solid black;
-  display: inline-block;
-  height: 80%;
+#app {
+  padding: 10px;
+}
+
+#overlay {
+  position: fixed;
+  display: block;
+  height: 75%;
+  width: 65%;
+  top: 0; 
+  left: 0;
+  right: 0;
+  bottom: 0;
+  margin: auto;
+  background-color: rgba(0, 0, 0, 0.85);
+  z-index: 2;
+  /* align-items: center; */
+  /*justify-content: center;*/
+  color: white;
+  font-size: 14px;
+  line-height: 180%; 
+  padding: 2%;
+  text-align: center;
+}
+
+#overlay form {
+  margin: auto;
+  padding: 2%;
+  width: 60%;
+  text-align: center;
+}
+
+#overlay input {
+  height: 30px;
+}
+
+#overlay-start {
+  font-size: 32px;
+  margin: 20px;
+  text-align: center;
+  cursor: pointer;
+}
+
+nav {
+  height: 10%;
+  padding: 10px;
+  text-align: center;
+  font-size: 30px;
+}
+
+.blinking {
+  animation: blinkingText 2s infinite;
+}
+
+@keyframes blinkingText{
+  0%{color: white;}
+  50%{color: transparent;}
+  100%{color: white;}
+}
+
+.game-container {
+  height: 90%;
+  display: flex;
+  justify-content: flex-start;
 }
 
 .game {
-  width: 60%;
+  width: 70%;
 }
 
 .scoreboard {
   width: 30%;
 }
 
+.timer {
+  text-align: center;
+  height: 10%;
+}
+
+/* .wall {
+  width: 100%;
+  height: 3%;
+  background-color: grey;
+} */
+
+.board {
+  height: 87%;
+  display: flex;
+  justify-content: flex-start;
+}
+
+.play {
+  height: 100%;
+  width: 50%;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: center; 
+}
+
+.game form {
+  width: 80%;
+  height: 8%;
+  margin-bottom: 3%;
+}
+
+input {
+  width: 100%;
+  height: 100%;
+  text-align: center;
+  border-radius: 10px;
+  font-size: 1.5em;
+}
+
 .brick {
+  width: 80%;
+  height: 5%;
+  text-align: center;
+  background: url("./assets/bricklayer.PNG") no-repeat center/cover;
+  color: white;
   border: 1px solid black;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#gudetama, #their-gudetama {
+  height: 170px;
+  width: 80%;
+  background-size: cover;
+  border: 5px solid black;
+  background-image: url("https://i.pinimg.com/originals/99/7c/90/997c901be018004a07d66ae4920fd3a6.png");
+}
+
+#crackedegg {
+  width: 45%;
+  height: 45%;
+  background: url("./assets/gudetama-cracked.gif") no-repeat center/cover;
+}
+
+.sbColumn {
+  float: left;
+  padding: 10px;
+  height: 0px;
+  text-align: center
+}
+
+.left {
+  width: 20%; 
+}
+
+.right {
+  width: 33%; 
+}
+
+.middle {
+  width: 33%;
+}
+
+.sbHeader{
+  margin-left: 70px
 }
