@@ -3,10 +3,11 @@ const fs = require('fs');
 const path = require('path');
 
 const connection = mysql.createConnection({
-  host: 'localhost',
-  user: 'student', 
-  password: 'student', 
+  host: 'ironman.crb3zmhwoovo.us-east-1.rds.amazonaws.com',
+  user: 'IronMan', 
+  password: 'IronMan-HR', 
   database: 'humptydumpty',
+  port: 3306,
 });
 
 connection.connect(function(err) {
