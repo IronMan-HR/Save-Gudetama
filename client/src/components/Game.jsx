@@ -29,9 +29,8 @@ class Game extends React.Component {
     this.sendScore = this.sendScore.bind(this);
     this.stopGame = this.stopGame.bind(this);
 
-    var c = io.connect("localhost:5000", {query: this.state.time})
+    var c = io.connect(process.env.PORT, {query: this.state.time})
     console.log('c', c)
-
 
     socket.on('receive words from opponent', (payload) => {
       this.updateOpponentWordList(payload);
