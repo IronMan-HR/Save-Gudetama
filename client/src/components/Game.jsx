@@ -17,6 +17,7 @@ class Game extends React.Component {
       round: 'all',
       instructions: ["Humpty Dumpty sat on a wall,", "Humpty Dumpty had a great fall.", "All the king's horses and all the king's men", "Couldn't put Humpty together again.", "HURRY - KEEP TYPING TO PREVENT HIS DEMISE!"],
       prompt: 'START GAME',
+      opponentTime: 0
     }
     
     this.getReady = this.getReady.bind(this);
@@ -38,8 +39,11 @@ class Game extends React.Component {
     socket.on('startGame', () => {
       this.startGame();
     });
-    socket.on('they lost', () => {
+    socket.on('they lost', (score) => {
       // this is bad, eventually put a red x over their bricks or something
+      this.setState({
+        opponentTime: score,
+      })
       document.getElementById('their-game').style.backgroundColor = "red";
     });
   }
@@ -106,7 +110,8 @@ class Game extends React.Component {
       // (as bricks build up, background turns a darker red to signify danger)
       if (this.state.words.length >= 20) {
         clearTimeout(step);
-        socket.emit('i lost', {room: this.props.room, username: this.props.username});
+        //console.log('opponent time',this.state.time)
+        socket.emit('i lost', {room: this.props.room, username: this.props.username, score: this.state.time});
         this.stopGame();
       } else if (this.state.words.length > 15) {
         document.getElementById('gudetama').style.backgroundColor = "rgba(255, 0, 0, 1)";
@@ -170,7 +175,6 @@ class Game extends React.Component {
     })
   }
 
-  // handles a submitted word when user hits enter
   handleSubmit(e) {
     e.preventDefault();
     var submittedWord = this.state.userInput;
@@ -230,12 +234,13 @@ class Game extends React.Component {
     }, 2000);
     
     this.sendScore(this.props.username, this.state.time);
-
+ 
+    //stopStart();
     playGameOver();
     
     this.setState({
       // maybe find a way to compare your score vs opponent's score and show YOU WIN/YOU LOSE
-      instructions: ['GAME OVER', `YOU SCORED: ${this.state.time}`, 'YOUR OPPONENT SCORED: '],
+      instructions: ['GAME OVER', `YOU SCORED: ${this.state.time}`, `YOUR OPPONENT SCORED: ${this.state.opponentTime}`],
       prompt: 'REPLAY',
     });
   }

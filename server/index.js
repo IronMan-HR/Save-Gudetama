@@ -64,8 +64,9 @@ io.on('connection', (socket) => {
   });
 
   socket.on('i lost', (data) => {
-    socket.broadcast.to(data.room).emit('they lost');
-    delete rooms[data.room][data.username];
+    console.log('score is', data.score);
+    socket.broadcast.to(data.room).emit('they lost', data.score);
+    //delete rooms[data.room][data.username];
   });
 
   socket.on('send words to opponent', function(data) {
