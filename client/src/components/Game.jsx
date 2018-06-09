@@ -93,8 +93,15 @@ class Game extends React.Component {
     document.getElementById('typing-input').disabled = false;
     document.getElementById('typing-input').focus();
     document.getElementById('overlay').style.display = "none";
-    document.getElementById('gudetama').style.display = "inline-block";
-    document.getElementById('their-gudetama').style.display = "inline-block";
+    document.getElementById('their-game').style.backgroundColor = "transparent";
+    document.getElementById('gudetama').style = {
+      display: "inline-block",
+      backgroundColor: "none",
+    };
+    document.getElementById('their-gudetama').style = {
+      display: "inline-block",
+      backgroundColor: "none",
+    };
 
     // long function to define what happens at every interval
     var go = () => {
