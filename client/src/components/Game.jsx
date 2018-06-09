@@ -32,8 +32,8 @@ class Game extends React.Component {
     var c = io.connect(process.env.PORT, {query: this.state.time})
     console.log('c', c)
 
-    socket.on('receive words from opponent', (payload) => {
-      this.updateOpponentWordList(payload);
+    socket.on('receive words from opponent', (words) => {
+      this.updateOpponentWordList(words);
     });
     socket.on('startGame', () => {
       this.startGame();
@@ -57,7 +57,7 @@ class Game extends React.Component {
     }).catch(err => {
       console.error(err);
     });
-    socket.emit('entering room', {room: this.props.room});
+    socket.emit('entering room', {room: this.props.room, username: this.props.username});
   }
 
   // sends same words to opponent
@@ -73,7 +73,8 @@ class Game extends React.Component {
   // leave socket (deletes room)
   componentWillUnmount() {  
     socket.emit('leaving room', {
-      room: this.props.room
+      room: this.props.room,
+      username: this.props.username,
     });
   }
 
@@ -254,6 +255,7 @@ class Game extends React.Component {
           })}</div>
           <div id="crackedegg"></div>
           <div>
+            {/* "getReady" waits for 2 players, "startGame" (on click) is 1 player */}
             <form id="starter-form" onSubmit={this.getReady} autoComplete="off">
               <input id="user-input" placeholder="Who are you?" value={this.props.username} onChange={this.props.handleUserNameChange} autoFocus/>
             </form>
