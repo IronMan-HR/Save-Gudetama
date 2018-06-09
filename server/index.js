@@ -59,10 +59,12 @@ io.on('connection', (socket) => {
 
   socket.on('leaving room', (data) => {
     socket.leave(data.room);
+    rooms[data.room][data.username] = 0;
     // if (getPlayerCount(data.room) === 0) {
     //   delete rooms[data.room];
     // }
     delete rooms[data.room];
+    console.log('leaving room, rooms is', rooms);
   });
 
   socket.on('ready', (data) => {
@@ -70,7 +72,7 @@ io.on('connection', (socket) => {
       rooms[data.room] = {};
     }; 
     rooms[data.room][data.username] = 1; 
-    console.log('rooms is', rooms);
+    console.log('ready, rooms is', rooms);
     if (getPlayerCount(data.room) === 2) { //start the game with 2 players in the room
       io.in(data.room).emit('startGame');
     }
@@ -79,7 +81,7 @@ io.on('connection', (socket) => {
   socket.on('i lost', (data) => {
     socket.broadcast.to(data.room).emit('they lost', data.score);
     rooms[data.room][data.username] = 0;
-    console.log('rooms is', rooms);
+    console.log('i lost, rooms is', rooms);
   });
 
   socket.on('send words to opponent', function(data) {
