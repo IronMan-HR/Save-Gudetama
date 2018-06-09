@@ -59,6 +59,10 @@ io.on('connection', (socket) => {
 
   socket.on('leaving room', (data) => {
     socket.leave(data.room);
+    // if (getPlayerCount(data.room) === 0) {
+    //   delete rooms[data.room];
+    // }
+    delete rooms[data.room];
   });
 
   socket.on('ready', (data) => {
