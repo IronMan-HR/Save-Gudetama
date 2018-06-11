@@ -57,20 +57,23 @@ class Game extends React.Component {
     }).catch(err => {
       console.error(err);
     });
-    socket.emit('entering room', {room: this.props.room, username: this.props.username});
+    socket.emit('entering room', {
+      room: this.props.room, 
+      username: this.props.username
+    });
   }
 
-  // sends same words to opponent
+  // sends your words to opponent
   componentDidUpdate(prevProps, prevState) {
     if (this.state.words.length !== prevState.words.length) {
       socket.emit('send words to opponent', {
         room: this.props.room,
         newWords: this.state.words,
-      }) 
+      }); 
     }
   }
 
-  // leave socket (deletes room)
+  // leave socket
   componentWillUnmount() {  
     socket.emit('leaving room', {
       room: this.props.room,
@@ -86,7 +89,10 @@ class Game extends React.Component {
     this.setState({
       prompt: 'WAITING...',
     });
-    socket.emit('ready', {room: this.props.room, username: this.props.username});
+    socket.emit('ready', {
+      room: this.props.room, 
+      username: this.props.username
+    });
   }
 
   startGame() {
@@ -118,7 +124,11 @@ class Game extends React.Component {
       if (this.state.words.length >= 20) {
         clearTimeout(step);
         //console.log('opponent time',this.state.time)
-        socket.emit('i lost', {room: this.props.room, username: this.props.username, score: this.state.time});
+        socket.emit('i lost', {
+          room: this.props.room, 
+          username: this.props.username, 
+          score: this.state.time
+        });
         this.stopGame();
       } else if (this.state.words.length > 15) {
         document.getElementById('gudetama').style.backgroundColor = "rgba(255, 0, 0, 1)";
@@ -168,7 +178,7 @@ class Game extends React.Component {
     });
   }
 
-  // updates opponent's words with current words
+  // updates your view of opponent's words
   updateOpponentWordList(words) {
     this.setState({
       theirWords: words
@@ -182,6 +192,7 @@ class Game extends React.Component {
     })
   }
 
+  // when the user hits "enter"
   handleSubmit(e) {
     e.preventDefault();
     var submittedWord = this.state.userInput;
@@ -242,7 +253,7 @@ class Game extends React.Component {
     
     this.sendScore(this.props.username, this.state.time);
  
-    //stopStart();
+    // audio effect
     playGameOver();
     
     this.setState({
@@ -257,6 +268,7 @@ class Game extends React.Component {
       <div className="game">
         <div id="overlay">
           <div>{this.state.instructions.map((line, index) => {
+            // audio effect:
             playStart();
             return (<span key={index}>{line}<br></br></span>)
           })}</div>

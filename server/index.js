@@ -36,8 +36,10 @@ var server = app.listen(port, function() {
 
 var io = require('socket.io')(server);
 
+// an object to store what users are in what rooms
 var rooms = {};
 
+// count the players in each room
 var getPlayerCount = (roomName) => {
   var playerCount = 0;
   for (var player in rooms[roomName]) {
@@ -46,6 +48,7 @@ var getPlayerCount = (roomName) => {
   return playerCount;
 }
 
+// all socket logic:
 io.on('connection', (socket) => { 
   console.log('a user connected');
 
