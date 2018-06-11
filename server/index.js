@@ -1,6 +1,5 @@
 var express = require('express');
 var bodyParser = require('body-parser');
-var axios = require('axios');
 var {retrieveUsers, addUserOrUpdateScore, get1000Words} = require('../database/index.js');
 
 var app = express();
@@ -32,13 +31,24 @@ app.get('/dictionary', (req, res) => {
 var port = process.env.PORT || 5000;
 
 var server = app.listen(port, function() {
-  console.log('listening on port 5000!');
+  console.log(`listening on port ${port}!`);
 });
 
 var io = require('socket.io')(server);
 
+// an object to store what users are in what rooms
 var rooms = {};
 
+// count the players in each room
+var getPlayerCount = (roomName) => {
+  var playerCount = 0;
+  for (var player in rooms[roomName]) {
+    playerCount += rooms[roomName][player];
+  }
+  return playerCount;
+}
+
+// all socket logic:
 io.on('connection', (socket) => { 
   console.log('a user connected');
 
@@ -48,25 +58,32 @@ io.on('connection', (socket) => {
 
   socket.on('entering room', (data) => {
     socket.join(data.room);
-    rooms[data.room] = {};
   });
 
   socket.on('leaving room', (data) => {
     socket.leave(data.room);
-    delete rooms[data.room];
+    rooms[data.room][data.username] = 0;
+    if (getPlayerCount(data.room) === 0) {
+      delete rooms[data.room];
+    }
+    console.log('leaving room, rooms is', rooms);
   });
 
   socket.on('ready', (data) => {
-    rooms[data.room][data.username] = true;
-    if (Object.keys(rooms[data.room]).length === 2) { //start the game with 2 players in the room
+    if (!rooms[data.room]) {
+      rooms[data.room] = {};
+    }; 
+    rooms[data.room][data.username] = 1; 
+    console.log('ready, rooms is', rooms);
+    if (getPlayerCount(data.room) === 2) { //start the game with 2 players in the room
       io.in(data.room).emit('startGame');
     }
   });
 
   socket.on('i lost', (data) => {
-    console.log('score is', data.score);
     socket.broadcast.to(data.room).emit('they lost', data.score);
-    //delete rooms[data.room][data.username];
+    rooms[data.room][data.username] = 0;
+    console.log('i lost, rooms is', rooms);
   });
 
   socket.on('send words to opponent', function(data) {

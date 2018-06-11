@@ -29,12 +29,11 @@ class Game extends React.Component {
     this.sendScore = this.sendScore.bind(this);
     this.stopGame = this.stopGame.bind(this);
 
-    var c = io.connect("localhost:5000", {query: this.state.time})
+    var c = io.connect(process.env.PORT, {query: this.state.time})
     console.log('c', c)
 
-
-    socket.on('receive words from opponent', (payload) => {
-      this.updateOpponentWordList(payload);
+    socket.on('receive words from opponent', (words) => {
+      this.updateOpponentWordList(words);
     });
     socket.on('startGame', () => {
       this.startGame();
@@ -58,23 +57,27 @@ class Game extends React.Component {
     }).catch(err => {
       console.error(err);
     });
-    socket.emit('entering room', {room: this.props.room});
+    socket.emit('entering room', {
+      room: this.props.room, 
+      username: this.props.username
+    });
   }
 
-  // sends same words to opponent
+  // sends your words to opponent
   componentDidUpdate(prevProps, prevState) {
     if (this.state.words.length !== prevState.words.length) {
       socket.emit('send words to opponent', {
         room: this.props.room,
         newWords: this.state.words,
-      }) 
+      }); 
     }
   }
 
-  // leave socket (deletes room)
+  // leave socket
   componentWillUnmount() {  
     socket.emit('leaving room', {
-      room: this.props.room
+      room: this.props.room,
+      username: this.props.username,
     });
   }
 
@@ -86,15 +89,25 @@ class Game extends React.Component {
     this.setState({
       prompt: 'WAITING...',
     });
-    socket.emit('ready', {room: this.props.room, username: this.props.username});
+    socket.emit('ready', {
+      room: this.props.room, 
+      username: this.props.username
+    });
   }
 
   startGame() {
     document.getElementById('typing-input').disabled = false;
     document.getElementById('typing-input').focus();
     document.getElementById('overlay').style.display = "none";
-    document.getElementById('gudetama').style.display = "inline-block";
-    document.getElementById('their-gudetama').style.display = "inline-block";
+    document.getElementById('their-game').style.backgroundColor = "transparent";
+    document.getElementById('gudetama').style = {
+      display: "inline-block",
+      backgroundColor: "none",
+    };
+    document.getElementById('their-gudetama').style = {
+      display: "inline-block",
+      backgroundColor: "none",
+    };
 
     // long function to define what happens at every interval
     var go = () => {
@@ -111,7 +124,11 @@ class Game extends React.Component {
       if (this.state.words.length >= 20) {
         clearTimeout(step);
         //console.log('opponent time',this.state.time)
-        socket.emit('i lost', {room: this.props.room, username: this.props.username, score: this.state.time});
+        socket.emit('i lost', {
+          room: this.props.room, 
+          username: this.props.username, 
+          score: this.state.time
+        });
         this.stopGame();
       } else if (this.state.words.length > 15) {
         document.getElementById('gudetama').style.backgroundColor = "rgba(255, 0, 0, 1)";
@@ -161,7 +178,7 @@ class Game extends React.Component {
     });
   }
 
-  // updates opponent's words with current words
+  // updates your view of opponent's words
   updateOpponentWordList(words) {
     this.setState({
       theirWords: words
@@ -175,6 +192,7 @@ class Game extends React.Component {
     })
   }
 
+  // when the user hits "enter"
   handleSubmit(e) {
     e.preventDefault();
     var submittedWord = this.state.userInput;
@@ -235,7 +253,7 @@ class Game extends React.Component {
     
     this.sendScore(this.props.username, this.state.time);
  
-    //stopStart();
+    // audio effect
     playGameOver();
     
     this.setState({
@@ -250,11 +268,13 @@ class Game extends React.Component {
       <div className="game">
         <div id="overlay">
           <div>{this.state.instructions.map((line, index) => {
+            // audio effect:
             playStart();
             return (<span key={index}>{line}<br></br></span>)
           })}</div>
           <div id="crackedegg"></div>
           <div>
+            {/* "getReady" waits for 2 players, "startGame" (on click) is 1 player */}
             <form id="starter-form" onSubmit={this.getReady} autoComplete="off">
               <input id="user-input" placeholder="Who are you?" value={this.props.username} onChange={this.props.handleUserNameChange} autoFocus/>
             </form>
